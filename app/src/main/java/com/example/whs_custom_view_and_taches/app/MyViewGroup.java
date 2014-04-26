@@ -2,7 +2,6 @@ package com.example.whs_custom_view_and_taches.app;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.provider.CalendarContract;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -36,22 +35,16 @@ class MyViewGroup extends ViewGroup {
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(MY_LOGGER, "on touch listener in view 1");
                 Log.d(MY_LOGGER, "event parent id = " + v.getId());
-                double x = event.getX();;
-                double y = event.getY();;
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         Log.d(MY_LOGGER, "action down in view1");
-                        oldX = x;
-                        oldY = y;
                         return true;
                     case MotionEvent.ACTION_MOVE:
                         Log.d(MY_LOGGER, "action move in view1");
-                        double dx = oldX - x;
-                        double dy = oldY - y;
-                        if(dx < 0 && ViewConfiguration.getTouchSlop() < Math.abs(dx) && Math.abs(dx) > Math.abs(dy)) {
-
-                        }
-                        return true;
+                        return false;
+                    case MotionEvent.ACTION_UP:
+                        Log.d(MY_LOGGER, "action up in view1");
+                        return false;
                 }
                 return false;
             }
@@ -64,6 +57,18 @@ class MyViewGroup extends ViewGroup {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d(MY_LOGGER, "on touch listener in view 2");
+                Log.d(MY_LOGGER, "event parent id = " + v.getId());
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        Log.d(MY_LOGGER, "action down in view2");
+                        return true;
+                    case MotionEvent.ACTION_MOVE:
+                        Log.d(MY_LOGGER, "action move in view2");
+                        return false;
+                    case MotionEvent.ACTION_UP:
+                        Log.d(MY_LOGGER, "action up in view2");
+                        return false;
+                }
                 return false;
             }
         });
@@ -71,8 +76,6 @@ class MyViewGroup extends ViewGroup {
         addView(view2);
         Log.d(MY_LOGGER, "view1 has id = " + view1.getId());
         Log.d(MY_LOGGER, "view2 has id = " + view2.getId());
-
-
     }
 
     MyViewGroup(Context context, AttributeSet attrs, int defStyle) {
@@ -81,17 +84,25 @@ class MyViewGroup extends ViewGroup {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        float x = ev.getX();
-        float y = ev.getY();
+        double x = ev.getX();
+        double y = ev.getY();
+        Log.d(MY_LOGGER, "action id = " + ev.getAction());
         switch(ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Log.d(MY_LOGGER, "action down");
+                oldX = x;
+                oldY = y;
                 return false;
             case MotionEvent.ACTION_MOVE:
                 Log.d(MY_LOGGER, "action move");
                 double dx = oldX - x;
                 double dy = oldY - y;
             if(dx < 0 && ViewConfiguration.getTouchSlop() < Math.abs(dx) && Math.abs(dx) > Math.abs(dy)) {
+                getChildAt(1).offsetLeftAndRight((int) Math.abs(dx));
+                return true;
+            }
+            if(dx > 0 && ViewConfiguration.getTouchSlop() < Math.abs(dx) && Math.abs(dx) > Math.abs(dy)) {
+                getChildAt(1).offsetLeftAndRight((int) -Math.abs(dx));
                 return true;
             }
         }
