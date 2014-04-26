@@ -20,6 +20,7 @@ class MyViewGroup extends ViewGroup {
     private int height;
     private double oldX;
     private double oldY;
+    private int step = 1;
 
     MyViewGroup(Context context) {
         super(context);
@@ -98,11 +99,17 @@ class MyViewGroup extends ViewGroup {
                 double dx = oldX - x;
                 double dy = oldY - y;
             if(dx < 0 && ViewConfiguration.getTouchSlop() < Math.abs(dx) && Math.abs(dx) > Math.abs(dy)) {
-                getChildAt(1).offsetLeftAndRight((int) Math.abs(dx));
+                while(getChildAt(1).getX() < -(50 * step)) {
+                    getChildAt(1).offsetLeftAndRight((int) Math.abs(step));
+                }
+                Log.d(MY_LOGGER, "x of view1 = " +getChildAt(1).getX());
                 return true;
             }
             if(dx > 0 && ViewConfiguration.getTouchSlop() < Math.abs(dx) && Math.abs(dx) > Math.abs(dy)) {
-                getChildAt(1).offsetLeftAndRight((int) -Math.abs(dx));
+                while(getChildAt(1).getX() > -width) {
+                    getChildAt(1).offsetLeftAndRight((int) -Math.abs(step));
+                }
+                Log.d(MY_LOGGER, "x of view1 = " +getChildAt(1).getX());
                 return true;
             }
         }
@@ -115,7 +122,7 @@ class MyViewGroup extends ViewGroup {
         getChildAt(0).measure(widthMeasureSpec, heightMeasureSpec);
         getChildAt(1).measure(widthMeasureSpec, heightMeasureSpec);
         width = MeasureSpec.getSize(widthMeasureSpec);
-        height =     MeasureSpec.getSize(heightMeasureSpec);
+        height = MeasureSpec.getSize(heightMeasureSpec);
         setMeasuredDimension(width, height);
 
 
