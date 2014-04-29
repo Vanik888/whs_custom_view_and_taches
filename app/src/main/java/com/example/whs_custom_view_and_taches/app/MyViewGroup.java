@@ -84,34 +84,48 @@ class MyViewGroup extends ViewGroup {
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
+    public boolean onTouchEvent(MotionEvent ev) {
         double x = ev.getX();
         double y = ev.getY();
+        switch(ev.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                double dx = oldX - x;
+                double dy = oldY - y;
+                if(dx < 0 && ViewConfiguration.getTouchSlop() < Math.abs(dx) && Math.abs(dx) > Math.abs(dy)) {
+//                while(getChildAt(1).getX() < -(50 * step)) {
+//                    getChildAt(1).offsetLeftAndRight((int) Math.abs(step));
+//                }
+                    getChildAt(1).offsetLeftAndRight((int) Math.abs(dx));
+                    Log.d(MY_LOGGER, "x of view1 = " +getChildAt(1).getX());
+                    return true;
+                }
+                if(dx > 0 && ViewConfiguration.getTouchSlop() < Math.abs(dx) && Math.abs(dx) > Math.abs(dy)) {
+//                while(getChildAt(1).getX() > -width) {
+//                    getChildAt(1).offsetLeftAndRight((int) -Math.abs(step));
+//                }
+                    getChildAt(1).offsetLeftAndRight((int) -Math.abs(dx));
+                    Log.d(MY_LOGGER, "x of view1 = " +getChildAt(1).getX());
+                    return true;
+                }
+                return true;
+        }
+        return super.onTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
         Log.d(MY_LOGGER, "action id = " + ev.getAction());
+        double x = ev.getX();
+        double y = ev.getY();
         switch(ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.d(MY_LOGGER, "action down");
                 oldX = x;
                 oldY = y;
+                Log.d(MY_LOGGER, "action down");
                 return false;
             case MotionEvent.ACTION_MOVE:
                 Log.d(MY_LOGGER, "action move");
-                double dx = oldX - x;
-                double dy = oldY - y;
-            if(dx < 0 && ViewConfiguration.getTouchSlop() < Math.abs(dx) && Math.abs(dx) > Math.abs(dy)) {
-                while(getChildAt(1).getX() < -(50 * step)) {
-                    getChildAt(1).offsetLeftAndRight((int) Math.abs(step));
-                }
-                Log.d(MY_LOGGER, "x of view1 = " +getChildAt(1).getX());
                 return true;
-            }
-            if(dx > 0 && ViewConfiguration.getTouchSlop() < Math.abs(dx) && Math.abs(dx) > Math.abs(dy)) {
-                while(getChildAt(1).getX() > -width) {
-                    getChildAt(1).offsetLeftAndRight((int) -Math.abs(step));
-                }
-                Log.d(MY_LOGGER, "x of view1 = " +getChildAt(1).getX());
-                return true;
-            }
         }
         return super.onInterceptTouchEvent(ev);
     }
